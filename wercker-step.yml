@@ -1,0 +1,28 @@
+name: deploy-to-ecs
+version: 1.0.0
+description: Deploy task to ECS
+keywords:
+  - aws
+  - ecs
+properties:
+  aws_key:
+    type: string
+    required: true
+  aws_secret:
+    type: string
+    required: true
+  aws_region:
+    type: string
+    required: true
+  template_file:
+    type: string
+    required: true
+  cluster:
+    type: string
+    required: true
+  service:
+    type: string
+    required: true
+  task:
+    type: string
+    required: true

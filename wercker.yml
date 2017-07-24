@@ -1,0 +1,7 @@
+box: wercker/default
+build:
+  steps:
+    - shellcheck
+    - script:
+        name: prepare output
+        code: cp "README.md" "run.sh" "run-template.sh" "template.sh" "wercker-step.yml" "wercker.yml" "$WERCKER_OUTPUT_DIR"
