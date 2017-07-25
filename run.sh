@@ -1,13 +1,35 @@
 #!/bin/bash
 
+# Check if input file exists
+if [ -f "$WERCKER_DEPLOY_TO_ECS_TEMPLATE_FILE" ]; then
+  debug "Will use $WERCKER_DEPLOY_TO_ECS_TEMPLATE_FILE as JSON template for the AWS ECS task"
+else
+  debug ""
+fi
+
 # Task file
 TASKFILE="$WERCKER_STEP_ROOT/task.json"
 
 # Copy template file
+ls -la "$WERCKER_STEP_ROOT"
 cp "$WERCKER_DEPLOY_TO_ECS_TEMPLATE_FILE" "$TASKFILE.template"
+ls -la "$WERCKER_STEP_ROOT"
+if [ -f "$TASKFILE.template" ]; then
+  debug "$TASKFILE.template was found"
+else
+  debug "$TASKFILE.template was not found"
+  exit 1
+fi
 
 # Run templating system
 "$WERCKER_STEP_ROOT/run-template.sh"
+ls -la "$WERCKER_STEP_ROOT"
+if [ -f "$TASKFILE" ]; then
+  debug "$TASKFILE was found"
+else
+  debug "$TASKFILE was not found"
+  exit 1
+fi
 debug "Task template has been processed"
 
 # Install JQ
