@@ -15,3 +15,19 @@ Currently, the step requires the AWS CLI to be installed in the 'box' it runs on
 | cluster           | The name of the ECS cluster. |
 | service           | The name of the ECS service. |
 | task              | The name (family) of the ECS task definition. |
+
+# Example usage
+
+```
+deploy-to-ecs:
+  box: garland/aws-cli-docker
+  steps:
+    - slijkhuis/deploy-to-ecs:
+        aws_key: $AWS_ECS_KEY
+        aws_secret: $AWS_ECS_SECRET
+        aws_region: $AWS_REGION
+        template_file: "$WERCKER_SOURCE_DIR/task-definition.json.template"
+        cluster: "YourCluster"
+        service: "YourService"
+        task: "YourTaskDefinition"
+```
