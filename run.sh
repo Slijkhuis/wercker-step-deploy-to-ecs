@@ -22,7 +22,8 @@ else
 fi
 
 # Run templating system
-"$WERCKER_STEP_ROOT/run-template.sh"
+# "$WERCKER_STEP_ROOT/run-template.sh"
+"$WERCKER_STEP_ROOT/template.sh" "$TASKFILE.template" > "$TASKFILE"
 ls -la "$WERCKER_STEP_ROOT"
 if [ -f "$TASKFILE" ]; then
   debug "$TASKFILE was found"
