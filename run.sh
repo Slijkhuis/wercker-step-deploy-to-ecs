@@ -46,9 +46,14 @@ debug "AWS CLI has been configured"
 # Register new task revision
 debug "Going to register task $TASKFILE, which is based on template $WERCKER_DEPLOY_TO_ECS_TEMPLATE_FILE"
 aws ecs register-task-definition --cli-input-json "file://$TASKFILE" || exit 1
-debug "Going to update service in cluster $WERCKER_DEPLOY_TO_ECS_CLUSTER"
-aws ecs update-service --cluster "$WERCKER_DEPLOY_TO_ECS_CLUSTER" --service "$WERCKER_DEPLOY_TO_ECS_SERVICE" --task-definition "$WERCKER_DEPLOY_TO_ECS_TASK" || exit 1
-debug "Updated service has been deployed"
+
+if [ -z $WERCKER_DEPLOY_TO_ECS_CLUSTER ] && [ -z $WERCKER_DEPLOY_TO_ECS_SERVICE ] ; then
+  debug "Going to update service in cluster $WERCKER_DEPLOY_TO_ECS_CLUSTER"
+  aws ecs update-service --cluster "$WERCKER_DEPLOY_TO_ECS_CLUSTER" --service "$WERCKER_DEPLOY_TO_ECS_SERVICE" --task-definition "$WERCKER_DEPLOY_TO_ECS_TASK" || exit 1
+  debug "Updated service has been deployed"
+else
+  debug "Skipping service deployment because 'cluster' or 'service' is not set."
+fi
 
 # Deregister old tasks (keep the 2 newest versions)
 aws ecs list-task-definitions --family-prefix "$WERCKER_DEPLOY_TO_ECS_TASK" --status "ACTIVE" --sort ASC | jq  ".taskDefinitionArns[:-2]" | jq -r ".[]" | while read line; do aws ecs deregister-task-definition --task-definition "$line"; done
