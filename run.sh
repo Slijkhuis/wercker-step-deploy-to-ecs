@@ -47,7 +47,7 @@ debug "AWS CLI has been configured"
 debug "Going to register task $TASKFILE, which is based on template $WERCKER_DEPLOY_TO_ECS_TEMPLATE_FILE"
 aws ecs register-task-definition --cli-input-json "file://$TASKFILE" || exit 1
 
-if [ -z $WERCKER_DEPLOY_TO_ECS_CLUSTER ] && [ -z $WERCKER_DEPLOY_TO_ECS_SERVICE ] ; then
+if [ -z "$WERCKER_DEPLOY_TO_ECS_CLUSTER" ] && [ -z "$WERCKER_DEPLOY_TO_ECS_SERVICE" ] ; then
   debug "Going to update service in cluster $WERCKER_DEPLOY_TO_ECS_CLUSTER"
   aws ecs update-service --cluster "$WERCKER_DEPLOY_TO_ECS_CLUSTER" --service "$WERCKER_DEPLOY_TO_ECS_SERVICE" --task-definition "$WERCKER_DEPLOY_TO_ECS_TASK" || exit 1
   debug "Updated service has been deployed"
