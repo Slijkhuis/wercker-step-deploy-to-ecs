@@ -1,5 +1,5 @@
 name: deploy-to-ecs
-version: 1.0.5
+version: 1.0.6
 description: Deploy task to ECS
 keywords:
   - aws
@@ -16,7 +16,7 @@ properties:
     required: true
   template_file:
     type: string
-    required: true
+    required: false
   cluster:
     type: string
     required: false

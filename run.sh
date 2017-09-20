@@ -1,37 +1,43 @@
 #!/bin/bash
 
-# Check if input file exists
-if [ -f "$WERCKER_DEPLOY_TO_ECS_TEMPLATE_FILE" ]; then
-  debug "Will use $WERCKER_DEPLOY_TO_ECS_TEMPLATE_FILE as JSON template for the AWS ECS task"
-else
-  debug ""
-fi
-
 # Task file
 TASKFILE="$WERCKER_STEP_ROOT/task.json"
 
-# Copy template file
-ls -la "$WERCKER_STEP_ROOT"
-cp "$WERCKER_DEPLOY_TO_ECS_TEMPLATE_FILE" "$TASKFILE.template"
-ls -la "$WERCKER_STEP_ROOT"
-if [ -f "$TASKFILE.template" ]; then
-  debug "$TASKFILE.template was found"
+if [ -z "${WERCKER_DEPLOY_TO_ECS_TEMPLATE_FILE}" ] ; then
+  debug "Skipping task template..."
 else
-  debug "$TASKFILE.template was not found"
-  exit 1
-fi
 
-# Run templating system
-# "$WERCKER_STEP_ROOT/run-template.sh"
-"$WERCKER_STEP_ROOT/template.sh" "$TASKFILE.template" > "$TASKFILE"
-ls -la "$WERCKER_STEP_ROOT"
-if [ -f "$TASKFILE" ]; then
-  debug "$TASKFILE was found"
-else
-  debug "$TASKFILE was not found"
-  exit 1
+  # Check if input file exists
+  if [ -f "$WERCKER_DEPLOY_TO_ECS_TEMPLATE_FILE" ]; then
+    debug "Will use $WERCKER_DEPLOY_TO_ECS_TEMPLATE_FILE as JSON template for the AWS ECS task"
+  else
+    debug "Template file missing?"
+  fi
+
+  # Copy template file
+  ls -la "$WERCKER_STEP_ROOT"
+  cp "$WERCKER_DEPLOY_TO_ECS_TEMPLATE_FILE" "$TASKFILE.template"
+  ls -la "$WERCKER_STEP_ROOT"
+  if [ -f "$TASKFILE.template" ]; then
+    debug "$TASKFILE.template was found"
+  else
+    debug "$TASKFILE.template was not found"
+    exit 1
+  fi
+
+  # Run templating system
+  # "$WERCKER_STEP_ROOT/run-template.sh"
+  "$WERCKER_STEP_ROOT/template.sh" "$TASKFILE.template" > "$TASKFILE"
+  ls -la "$WERCKER_STEP_ROOT"
+  if [ -f "$TASKFILE" ]; then
+    debug "$TASKFILE was found"
+  else
+    debug "$TASKFILE was not found"
+    exit 1
+  fi
+  debug "Task template has been processed"
+
 fi
-debug "Task template has been processed"
 
 # Install JQ
 apk update && apk add jq
@@ -44,8 +50,12 @@ aws configure set default.region "$WERCKER_DEPLOY_TO_ECS_AWS_REGION"
 debug "AWS CLI has been configured"
 
 # Register new task revision
-debug "Going to register task $TASKFILE, which is based on template $WERCKER_DEPLOY_TO_ECS_TEMPLATE_FILE"
-aws ecs register-task-definition --cli-input-json "file://$TASKFILE" || exit 1
+if [ -z "${WERCKER_DEPLOY_TO_ECS_TEMPLATE_FILE}" ] ; then
+  debug "Skipping task registration because 'template_file' is not set."
+else
+  debug "Going to register task $TASKFILE, which is based on template $WERCKER_DEPLOY_TO_ECS_TEMPLATE_FILE"
+  aws ecs register-task-definition --cli-input-json "file://$TASKFILE" || exit 1
+fi
 
 if [ -z "${WERCKER_DEPLOY_TO_ECS_CLUSTER}" ] || [ -z "${WERCKER_DEPLOY_TO_ECS_SERVICE}" ] ; then
   debug "Skipping service deployment because 'cluster' or 'service' is not set."
