@@ -15,7 +15,7 @@ Currently, the step requires the AWS CLI to be installed in the 'box' it runs on
 | cluster           | The name of the ECS cluster. |
 | service           | The name of the ECS service. |
 | task              | The name (family) of the ECS task definition. |
-| revisions         | The number of revisions of task definition to keep (default: 2, 0 or negative number = infinite). |
+| revisions         | The number of revisions of task definition to keep (default: 5, 0 or negative number = infinite). |
 
 If you don't provide a cluster and/or service, only the task is updated, not the service.
 
