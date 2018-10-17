@@ -67,7 +67,7 @@ fi
 
 # Deregister old tasks (keep the 2 newest versions)
 if [ -z "$WERCKER_DEPLOY_TO_ECS_REVISIONS" ] ; then
-  WERCKER_DEPLOY_TO_ECS_REVISIONS="2"
+  WERCKER_DEPLOY_TO_ECS_REVISIONS="5"
   debug "'revisions' was not set, defaulting to 5"
 fi
 if [ $WERCKER_DEPLOY_TO_ECS_REVISIONS -gt 0 ] ; then
